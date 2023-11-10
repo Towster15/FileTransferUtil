@@ -56,8 +56,6 @@ public class ClientThread extends Thread {
                         // Check that we've not had anything sent from the server
                         if (inputStream.available() > 0) {
                             inputText = LineReader.readLine(inputStream);
-                            // TODO: This is why we get longer files printed to the terminal
-                            System.out.println(inputText);
                         }
                         //
                         if (!this.requestQueue.isEmpty()) {
@@ -72,31 +70,32 @@ public class ClientThread extends Thread {
                                 String fileName = LineReader.readLine(inputStream);
                                 int fileLength = Integer.parseInt(LineReader.readLine(inputStream));
                                 int packetCount = Integer.parseInt(LineReader.readLine(inputStream));
-                                System.out.printf("Expecting %d packets containing %d bytes%n", packetCount, fileLength);
+
                                 // Check we're ready to receive the file's bytes
                                 if (LineReader.readLine(inputStream).equals(IncomingNetMessages.BYTES_INCOMING)) {
-                                    System.out.println("Bytes incoming");
                                     // Numbers used for controlling the loop
                                     int packetsReceived = 0;
                                     int bytesToRead = 1024;
                                     // Create our byte array
                                     byte[] fileBytes = new byte[(int) fileLength];
                                     // Loop unitl we've received the right amount of packets
-                                    do {
-                                        System.out.printf("Packets received: %d%n", packetsReceived);
+                                    while (packetsReceived < packetCount) {
                                         // Check that we're not going to get a bunch of null chars on the end
+                                        System.out.printf("Packets received: %d%n" +
+                                                "bytes left: %d%n", packetsReceived, fileLength - (packetsReceived * 1024));
                                         if ((fileLength - (packetsReceived * 1024)) < 1024) {
                                             bytesToRead = fileLength - (packetsReceived * 1024);
                                         }
                                         if (bytesToRead < 1) {
                                             System.out.println("Negative byte segment length!");
+                                            System.out.printf("Reading %d bytes%n", bytesToRead);
                                             break;
                                         }
                                         // Read the bytes straight from the stream to the byte array
                                         inputStream.read(fileBytes, packetsReceived * 1024, bytesToRead);
                                         // Mark one more packet as received
                                         packetsReceived++;
-                                    } while (packetsReceived <= packetCount);
+                                    };
                                     // Construct the file
                                     FileBuilder.buildFile(fileBytes, fileName);
                                 } else {
