@@ -1,6 +1,7 @@
 package com.towster15.FileTransferUtil.Server;
 
-import com.towster15.FileTransferUtil.NetworkMessages.*;
+import com.towster15.FileTransferUtil.NetworkMessages.IncomingMessages;
+import com.towster15.FileTransferUtil.NetworkMessages.OutgoingMessages;
 
 import java.io.*;
 import java.net.Socket;
@@ -51,22 +52,52 @@ public class ServerThread extends Thread {
                 if (inputReader.ready()) {
                     inputText = inputReader.readLine();
                     if (inputText.equals(IncomingMessages.REQUEST_FILE)) {
+                        //
+                        System.out.println("File requested");
                         // Request the file
-                        // Send the file length and extension first
+                        // Send the file name, extensions and flush to send
                         outputStreamWriter.write(String.format("%s%n", this.FILE_NAME));
-                        // Flush buffers to send
                         outputStreamWriter.flush();
+                        // Send the file length and flush to send
                         outputStreamWriter.write(String.format("%d%n", FILE_BYTES.length));
-                        // Flush buffers to send
                         outputStreamWriter.flush();
-                        // Send a message to show it'll switch to bytes
+                        // Send the amount of incoming packets and flush to send
+                        outputStreamWriter.write(
+                                String.format("%d%n", (int) Math.ceil(FILE_BYTES.length / 1024.0))
+                        );
+                        outputStreamWriter.flush();
+                        // Send a message to show it'll switch to bytes and
+                        // flush to send
                         outputStreamWriter.write(OutgoingMessages.BYTES_INCOMING);
-                        // Flush buffers to send
                         outputStreamWriter.flush();
+
                         // Send the file after
-                        outputStream.write(FILE_BYTES);
-                        // Add the newline to show the reader this is the end of line
-                        outputStreamWriter.write("\n");
+                        // Loop through the file to break it up into individual
+                        // packets, sending 1KB at a time
+                        int offset = 0;
+                        int length = 1024;
+                        do {
+                            // Check that we're not at the end of the file, so
+                            // that we don't send loads of null chars
+                            if ((FILE_BYTES.length - offset) < 1024) {
+                                length = FILE_BYTES.length - offset;
+                            } if (length < 1) {
+                                System.out.println("Negative byte segment length!");
+                                break;
+                            }
+                            // Send the KB
+                            outputStream.write(FILE_BYTES, offset, length);
+                            // Add the newline to show the reader this is the
+                            // end of line
+                            outputStreamWriter.write("\n");
+                            // Flush to send
+                            outputStreamWriter.flush();
+                            // Increment offset to make sure we get the next KB
+                            // of the file
+                            offset += 1024;
+                        } while (offset <= FILE_BYTES.length);
+
+                        System.out.println("File sent");
 
                     } else if (inputText.equals(IncomingMessages.REQUEST_TEST)) {
                         // Test the connection

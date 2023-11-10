@@ -1,6 +1,7 @@
 package com.towster15.FileTransferUtil.Client;
 
-import com.towster15.FileTransferUtil.NetworkMessages.*;
+import com.towster15.FileTransferUtil.NetworkMessages.IncomingMessages;
+import com.towster15.FileTransferUtil.NetworkMessages.OutgoingMessages;
 
 import java.io.*;
 import java.net.Socket;
@@ -53,6 +54,7 @@ public class ClientThread extends Thread {
                         // Check that we've not had anything sent from the server
                         if (inputReader.ready()) {
                             inputText = inputReader.readLine();
+                            // TODO: This is why we get longer files printed to the terminal
                             System.out.println(inputText);
                         }
                         //
@@ -62,17 +64,37 @@ public class ClientThread extends Thread {
                                 outputStreamWriter.write(OutgoingMessages.REQUEST_FILE);
                                 // Flush buffers to send
                                 outputStreamWriter.flush();
-                                //
-                                String fileName;
-                                int fileLength;
+
                                 // Looking for the file name, the length of the file and then a 0 to be sent
                                 // The 0 breaks us from the loop so that we can start reading in the bytes
-                                fileName = inputReader.readLine();
-                                fileLength = Integer.parseInt(inputReader.readLine());
+                                String fileName = inputReader.readLine();
+                                int fileLength = Integer.parseInt(inputReader.readLine());
+                                int packetCount = Integer.parseInt(inputReader.readLine());
+                                System.out.printf("Expecting %d packets containing %d bytes%n", packetCount, fileLength);
+                                // Check we're ready to receive the file's bytes
                                 if (inputReader.readLine().equals(IncomingMessages.BYTES_INCOMING)) {
+                                    System.out.println("Bytes incoming");
+                                    // Numbers used for controlling the loop
+                                    int packetsReceived = 0;
+                                    int bytesToRead = 1024;
+                                    // Create our byte array
                                     byte[] fileBytes = new byte[(int) fileLength];
-                                    // Read the bytes straight from the stream to the byte array
-                                    inputStream.read(fileBytes);
+                                    // Loop unitl we've received the right amount of packets
+                                    do {
+                                        System.out.printf("Packets received: %d%n", packetsReceived);
+                                        // Check that we're not going to get a bunch of null chars on the end
+                                        if ((fileLength - (packetsReceived * 1024)) < 1024) {
+                                            bytesToRead = fileLength - (packetsReceived * 1024);
+                                        } if (bytesToRead < 1) {
+                                            System.out.println("Negative byte segment length!");
+                                            break;
+                                        }
+                                        // Read the bytes straight from the stream to the byte array
+                                        inputReader.read(fileBytes, packetsReceived * 1024, bytesToRead);
+                                        // Mark one more packet as received
+                                        packetsReceived++;
+                                    } while (packetsReceived <= packetCount);
+                                    // Construct the file
                                     FileBuilder.buildFile(fileBytes, fileName);
                                 } else {
                                     System.out.println("Received malformed data, transfer cancelled");
