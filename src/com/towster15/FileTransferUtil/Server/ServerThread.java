@@ -1,7 +1,7 @@
 package com.towster15.FileTransferUtil.Server;
 
-import com.towster15.FileTransferUtil.NetworkMessages.IncomingMessages;
-import com.towster15.FileTransferUtil.NetworkMessages.OutgoingMessages;
+import com.towster15.FileTransferUtil.Util.IncomingNetMessages;
+import com.towster15.FileTransferUtil.Util.OutgoingNetMessages;
 
 import java.io.*;
 import java.net.Socket;
@@ -33,7 +33,7 @@ public class ServerThread extends Thread {
             String latestLine = inputReader.readLine();
             // Check for password being correct
             if (latestLine == null || !latestLine.equals(this.PASSWORD)) {
-                outputStreamWriter.write(OutgoingMessages.CONNECTION_CLOSED);
+                outputStreamWriter.write(OutgoingNetMessages.CONNECTION_CLOSED);
                 // Flush buffers to send
                 outputStreamWriter.flush();
                 System.out.println("Authentication failed");
@@ -41,7 +41,7 @@ public class ServerThread extends Thread {
                 return;
             } else {
                 System.out.println("Authenticated successfully");
-                outputStreamWriter.write(OutgoingMessages.AUTH_SUCCESS);
+                outputStreamWriter.write(OutgoingNetMessages.AUTH_SUCCESS);
                 // Flush buffers to send
                 outputStreamWriter.flush();
             }
@@ -51,7 +51,7 @@ public class ServerThread extends Thread {
             do {
                 if (inputReader.ready()) {
                     inputText = inputReader.readLine();
-                    if (inputText.equals(IncomingMessages.REQUEST_FILE)) {
+                    if (inputText.equals(IncomingNetMessages.REQUEST_FILE)) {
                         //
                         System.out.println("File requested");
                         // Request the file
@@ -68,7 +68,7 @@ public class ServerThread extends Thread {
                         outputStreamWriter.flush();
                         // Send a message to show it'll switch to bytes and
                         // flush to send
-                        outputStreamWriter.write(OutgoingMessages.BYTES_INCOMING);
+                        outputStreamWriter.write(OutgoingNetMessages.BYTES_INCOMING);
                         outputStreamWriter.flush();
 
                         // Send the file after
@@ -81,7 +81,8 @@ public class ServerThread extends Thread {
                             // that we don't send loads of null chars
                             if ((FILE_BYTES.length - offset) < 1024) {
                                 length = FILE_BYTES.length - offset;
-                            } if (length < 1) {
+                            }
+                            if (length < 1) {
                                 System.out.println("Negative byte segment length!");
                                 break;
                             }
@@ -99,11 +100,11 @@ public class ServerThread extends Thread {
 
                         System.out.println("File sent");
 
-                    } else if (inputText.equals(IncomingMessages.REQUEST_TEST)) {
+                    } else if (inputText.equals(IncomingNetMessages.REQUEST_TEST)) {
                         // Test the connection
                         // Return a known value
                         System.out.println("Test requested");
-                        outputStreamWriter.write(OutgoingMessages.TEST_SUCCESS);
+                        outputStreamWriter.write(OutgoingNetMessages.TEST_SUCCESS);
 
                     }
                     // Flush buffers to send
@@ -117,13 +118,13 @@ public class ServerThread extends Thread {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-            } while (!inputText.equals(IncomingMessages.CONNECTION_CLOSED) && !checkInterrupt);
+            } while (!inputText.equals(IncomingNetMessages.CONNECTION_CLOSED) && !checkInterrupt);
             // Only send the interrupt request if the client didn't send us one
             // first
             if (checkInterrupt) {
                 // Send a final message to ensure the client knows the
                 // connection has been closed
-                outputStreamWriter.write(OutgoingMessages.CONNECTION_CLOSED);
+                outputStreamWriter.write(OutgoingNetMessages.CONNECTION_CLOSED);
                 // Flush buffers to send
                 outputStreamWriter.flush();
             }
