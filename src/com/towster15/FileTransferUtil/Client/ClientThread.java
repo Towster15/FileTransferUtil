@@ -81,14 +81,11 @@ public class ClientThread extends Thread {
                                     // Loop unitl we've received the right amount of packets
                                     while (packetsReceived < packetCount) {
                                         // Check that we're not going to get a bunch of null chars on the end
-                                        System.out.printf("Packets received: %d%n" +
-                                                "bytes left: %d%n", packetsReceived, fileLength - (packetsReceived * 1024));
                                         if ((fileLength - (packetsReceived * 1024)) < 1024) {
                                             bytesToRead = fileLength - (packetsReceived * 1024);
                                         }
                                         if (bytesToRead < 1) {
                                             System.out.println("Negative byte segment length!");
-                                            System.out.printf("Reading %d bytes%n", bytesToRead);
                                             break;
                                         }
                                         // Read the bytes straight from the stream to the byte array
