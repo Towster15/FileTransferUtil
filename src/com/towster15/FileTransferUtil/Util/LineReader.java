@@ -11,13 +11,14 @@ public class LineReader {
 
         // Use this to store our line
         ByteArrayOutputStream line = new ByteArrayOutputStream();
-        //
+        // New byte to store the character currently being dealt with
         byte[] nextByte = new byte[1];
+        // Flag to mark end of line
         boolean eol = false;
         try {
             // Stop if we hit the end of the data
             while (inputStream.read(nextByte, 0, 1) != -1) {
-                // only stop when we see \r (13) followed by \n (10)
+                // Check for \r that would come before \n
                 if(nextByte[0] == 13) {
                     // Set a flag, so we know if an EOL is coming
                     // /r only sent from Windows hosts
