@@ -88,9 +88,6 @@ public class ServerThread extends Thread {
                             }
                             // Send the KB
                             outputStream.write(FILE_BYTES, offset, length);
-                            // Add the newline to show the reader this is the
-                            // end of line
-                            outputStreamWriter.write("\n");
                             // Flush to send
                             outputStreamWriter.flush();
                             // Increment offset to make sure we get the next KB
