@@ -1,8 +1,10 @@
 package com.towster15.FileTransferUtil.Server;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +38,12 @@ public class ConnectionHandler extends Thread {
         // Let the user know that the server has started successfully
         System.out.printf("System is listening on port %d%s", this.PORT, "\n");
 
+        try {
+            serverSocket.setSoTimeout(1);
+        } catch (SocketException e) {
+            assert true;
+        }
+
         // Keep scanning for new connections until the close command is
         // called
         while (!Thread.interrupted()) {
@@ -46,6 +54,8 @@ public class ConnectionHandler extends Thread {
                 Socket socket;
                 try {
                     socket = serverSocket.accept();
+                } catch (InterruptedIOException ex) {
+                    continue;
                 } catch (IOException e) {
                     System.out.println("Failed to accept incoming connection");
                     // Continue onto the next loop/next connection if this one
