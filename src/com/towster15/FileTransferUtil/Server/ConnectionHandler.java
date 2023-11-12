@@ -68,6 +68,14 @@ public class ConnectionHandler extends Thread {
     }
 
     public int activeConnections() {
-        return this.threads.size();
+        int i = 0;
+        for (Thread thread : this.threads) {
+            if (thread.isAlive()) {
+                i++;
+            } else {
+                this.threads.remove(thread);
+            }
+        }
+        return i;
     }
 }

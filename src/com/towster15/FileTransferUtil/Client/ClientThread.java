@@ -51,6 +51,8 @@ public class ClientThread extends Thread {
                 // Checks that we got the right password
                 if (LineReader.readLine(inputStream).equals(IncomingNetMessages.AUTH_SUCCESS)) {
                     System.out.println("Authenticated!");
+                    // Check whether an interrupt has been received
+                    boolean checkInterrupt = false;
                     // Loop and read
                     do {
                         // Check that we've not had anything sent from the server
@@ -121,13 +123,18 @@ public class ClientThread extends Thread {
                         try {
                             Thread.sleep(20);
                         } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+                            checkInterrupt = true;
                         }
-                    } while (!inputText.equals(IncomingNetMessages.CONNECTION_CLOSED) && !Thread.interrupted());
+                        // Check for interrupts
+                        if (Thread.interrupted()) {
+                            checkInterrupt = true;
+                        }
+
+                    } while (!inputText.equals(IncomingNetMessages.CONNECTION_CLOSED) && !checkInterrupt);
 
                     // Send a final message to ensure the server knows the connection has been closed
                     // Only sends the message if the close request didn't come from the server
-                    if (Thread.interrupted()) {
+                    if (checkInterrupt) {
                         outputStreamWriter.write(OutgoingNetMessages.CONNECTION_CLOSED);
                         // Flush buffers to send
                         outputStreamWriter.flush();

@@ -125,6 +125,8 @@ public class ServerThread extends Thread {
                 // Flush buffers to send
                 outputStreamWriter.flush();
             }
+            // Show anybody reading from the console that a client has disconnected
+            System.out.println("Client disconnected");
             // Close the socket once the client has requested to disconnect
             this.SOCKET.close();
         } catch (IOException ioException) {

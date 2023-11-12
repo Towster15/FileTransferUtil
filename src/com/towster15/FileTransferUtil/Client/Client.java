@@ -128,6 +128,7 @@ public class Client {
             } else if (choice == 4) {
                 // Disconnect from the server
                 clientThread.interrupt();
+                activeConnection = false;
 
             }else if (choice == 0) {
                 // Exit to main menu
