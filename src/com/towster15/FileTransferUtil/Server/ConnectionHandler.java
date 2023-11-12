@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ConnectionHandler extends Thread {
@@ -68,12 +69,16 @@ public class ConnectionHandler extends Thread {
     }
 
     public int activeConnections() {
+        // https://stackoverflow.com/a/17279584
         int i = 0;
-        for (Thread thread : this.threads) {
+        for (Iterator<Thread> iter = this.threads.listIterator(); iter.hasNext(); ) {
+            Thread thread = iter.next();
             if (thread.isAlive()) {
+                // Add one to the count if the connection is live
                 i++;
             } else {
-                this.threads.remove(thread);
+                // Remove the thread from the list if it's dead
+                iter.remove();
             }
         }
         return i;
