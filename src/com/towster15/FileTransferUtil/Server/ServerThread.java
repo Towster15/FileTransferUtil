@@ -28,8 +28,7 @@ public class ServerThread extends Thread {
             // OutputStream for writing raw bytes, PrintWriter for writing text
             OutputStream outputStream = SOCKET.getOutputStream();
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            // outputStreamWriter.close();
-            System.out.println("Waiting for password authentication...");
+            // Get password
             String latestLine = inputReader.readLine();
             // Check for password being correct
             if (latestLine == null || !latestLine.equals(this.PASSWORD)) {

@@ -41,13 +41,11 @@ public class ClientThread extends Thread {
                 String inputText = "";
 
                 // Authenticate
-                System.out.println("About to send password");
                 outputStreamWriter.write(this.PASSWORD);
                 // Add the newline to show the reader this is the end of line
                 outputStreamWriter.write("\n");
                 // Flush buffers to send
                 outputStreamWriter.flush();
-                System.out.println("Sent password");
                 // Checks that we got the right password
                 if (LineReader.readLine(inputStream).equals(IncomingNetMessages.AUTH_SUCCESS)) {
                     System.out.println("Authenticated!");
@@ -94,7 +92,7 @@ public class ClientThread extends Thread {
                                         inputStream.read(fileBytes, packetsReceived * 1024, bytesToRead);
                                         // Mark one more packet as received
                                         packetsReceived++;
-                                    };
+                                    }
                                     // Construct the file
                                     FileBuilder.buildFile(fileBytes, fileName);
                                 } else {
@@ -152,7 +150,7 @@ public class ClientThread extends Thread {
                 System.out.println(ioException.getMessage());
             }
         } else {
-            System.out.println("null socket");
+            System.out.println("Null socket");
         }
     }
 }

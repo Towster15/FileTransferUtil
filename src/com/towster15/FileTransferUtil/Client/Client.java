@@ -122,7 +122,6 @@ public class Client {
 
             } else if (choice == 2 || choice == 3) {
                 // Get the file from the server or test connection
-                System.out.printf("Adding %d to requestQueue%n", choice);
                 clientThread.requestQueue.add(choice);
 
             } else if (choice == 4) {
@@ -130,7 +129,7 @@ public class Client {
                 clientThread.interrupt();
                 activeConnection = false;
 
-            }else if (choice == 0) {
+            } else if (choice == 0) {
                 // Exit to main menu
                 clientThread.interrupt();
                 System.out.println("Returning to main menu...");
