@@ -136,6 +136,8 @@ public class ClientThread extends Thread {
                         outputStreamWriter.write(OutgoingNetMessages.CONNECTION_CLOSED);
                         // Flush buffers to send
                         outputStreamWriter.flush();
+                    } else {
+                        System.out.println("Server closed");
                     }
 
                     // Display the incorrect password message

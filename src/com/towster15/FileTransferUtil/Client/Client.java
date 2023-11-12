@@ -25,6 +25,9 @@ public class Client {
         int choice = -1;
         // Loop until the user asks to exit
         while (choice != 0) {
+            if (activeConnection && !clientThread.isAlive()) {
+                activeConnection = false;
+            }
             System.out.println("\nClient options:");
             if (activeConnection) {
                 System.out.println("1. Request file" +
