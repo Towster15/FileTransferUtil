@@ -63,24 +63,26 @@ public class ConnectionHandler extends Thread {
             }
         }
         System.out.println("Closing all connections...");
+        // Prune threads first to prevent issuing commands to dead threads
+        this.pruneThreads();
         for (Thread thread : this.threads) {
             thread.interrupt();
         }
     }
 
-    public int activeConnections() {
+    private void pruneThreads() {
         // https://stackoverflow.com/a/17279584
-        int i = 0;
         for (Iterator<Thread> iter = this.threads.listIterator(); iter.hasNext(); ) {
             Thread thread = iter.next();
-            if (thread.isAlive()) {
-                // Add one to the count if the connection is live
-                i++;
-            } else {
+            if (!thread.isAlive()) {
                 // Remove the thread from the list if it's dead
                 iter.remove();
             }
         }
-        return i;
+    }
+
+    public int activeConnections() {
+        this.pruneThreads();
+        return this.threads.size();
     }
 }
