@@ -27,7 +27,7 @@ public class MainGUI {
 
         // Create our components for the basic menu
         // Title text
-        JLabel titleText = new JLabel(
+        JLabel titleLabel = new JLabel(
                 String.format("Simple File Transfer Utility%s", VERSION_NUM),
                 SwingConstants.CENTER
         );
@@ -37,10 +37,10 @@ public class MainGUI {
         // Place in the grid
         c.gridx = 0;
         c.gridy = 0;
-        pane.add(titleText, c);
+        pane.add(titleLabel, c);
 
         // Description text
-        JLabel instructionText = new JLabel(
+        JLabel instructionLabel = new JLabel(
                 "Select an option:",
                 SwingConstants.CENTER
         );
@@ -48,9 +48,9 @@ public class MainGUI {
         // External padding
         c.insets = new Insets(0,50,10,50);
         // Place in the grid
-        c.gridx = 0;       //aligned with button 2
-        c.gridy = 1;       //third row
-        pane.add(instructionText, c);
+        c.gridx = 0;
+        c.gridy = 1;
+        pane.add(instructionLabel, c);
 
         // Start server button
         JButton serverButton = new JButton("Share a file");
