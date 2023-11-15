@@ -227,7 +227,7 @@ public class Server {
             System.out.print("\nEnter (FULL) file path: ");
             chosenFile = new File(kbScanner.nextLine());
             // Check that the file is valid
-            if (checkFileExists(chosenFile) == 1) {
+            if (checkFileExists(chosenFile) == 0) {
                 this.sharedFile = chosenFile;
             }
 

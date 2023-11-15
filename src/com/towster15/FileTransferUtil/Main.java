@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        final String versionNum = "0.1.46";
+        final String versionNum = "0.1.47";
         Scanner kbScanner = new Scanner(System.in);
         int choice = -1;
 
